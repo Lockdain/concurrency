@@ -1,9 +1,7 @@
 package app;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import java.util.concurrent.*;
 
 /**
  * Here we have defined only two threads
@@ -15,16 +13,28 @@ import java.util.concurrent.Future;
 public class Main {
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
+        ExecutorService scheduledExecutor = Executors.newScheduledThreadPool(5);
+        ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) scheduledExecutor;
+        // monitoring service
+        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            System.out.println("From scheduled executor!");
+            System.out.println("Active tasks: " + threadPoolExecutor.getActiveCount());
+            System.out.println("Queue size: " + threadPoolExecutor.getQueue().size());
+        }, 1, 1, TimeUnit.SECONDS);
+        // first task
         Future<String> future = executorService.submit(() -> {
-           Thread.sleep(2000);
+           Thread.sleep(3000);
             return "The first callable is done!";
         });
+        // second task
         Future<String> future1 = executorService.submit(() -> {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
             return "The second callable is done!";
         });
+        // third task
         Future<String> future2 = executorService.submit(() -> {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             return "The third callable is done!";
         });
         try {
